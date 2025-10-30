@@ -1,3 +1,4 @@
+using Binance.Net.Objects.Models.Margin.Socket;
 ﻿using Binance.Net.Objects;
 using Binance.Net.Objects.Models;
 using Binance.Net.Objects.Models.Spot;
@@ -93,3 +94,21 @@ namespace Binance.Net.Interfaces.Clients.SpotApi
             CancellationToken ct = default);
     }
 }
+        /// <summary>
+        /// Subscribe to margin user data updates. You need to request the listen key first with the RestApi
+        /// </summary>
+        /// <param name="listenKey">Listen key</param>
+        /// <param name="onOrderUpdate">Handle order update</param>
+        /// <param name="onAccountUpdate">Handle account update</param>
+        /// <param name="onBalanceUpdate">Handle balance update</param>
+        /// <param name="onListenKeyExpired">Handle listen key expired</param>
+        /// <param name="onStreamTerminated">Handle stream terminated</param>
+        /// <param name="ct">Cancellation token</param>
+        /// <returns></returns>
+        Task<CallResult<UpdateSubscription>> SubscribeToMarginUserDataUpdatesAsync(string listenKey,
+            Action<DataEvent<BinanceMarginStreamOrderUpdate>>? onOrderUpdate = null,
+            Action<DataEvent<BinanceMarginStreamAccountUpdate>>? onAccountUpdate = null,
+            Action<DataEvent<BinanceMarginStreamBalanceUpdate>>? onBalanceUpdate = null,
+            Action<DataEvent<BinanceMarginStreamEvent>>? onListenKeyExpired = null,
+            Action<DataEvent<BinanceMarginStreamEvent>>? onStreamTerminated = null,
+            CancellationToken ct = default);

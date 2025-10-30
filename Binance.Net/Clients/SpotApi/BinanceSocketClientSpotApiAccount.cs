@@ -1,3 +1,5 @@
+using Binance.Net.Objects.Sockets.Subscriptions;
+using Binance.Net.Objects.Models.Margin.Socket;
 ﻿using Binance.Net.Objects.Models.Spot.Socket;
 using Binance.Net.Objects.Models.Spot;
 using Binance.Net.Interfaces.Clients.SpotApi;
@@ -141,3 +143,16 @@ namespace Binance.Net.Clients.SpotApi
         #endregion
     }
 }
+
+        /// <inheritdoc />
+        public async Task<CallResult<UpdateSubscription>> SubscribeToMarginUserDataUpdatesAsync(string listenKey,
+            Action<DataEvent<BinanceMarginStreamOrderUpdate>>? onOrderUpdate,
+            Action<DataEvent<BinanceMarginStreamAccountUpdate>>? onAccountUpdate,
+            Action<DataEvent<BinanceMarginStreamBalanceUpdate>>? onBalanceUpdate,
+            Action<DataEvent<BinanceMarginStreamEvent>>? onListenKeyExpired,
+            Action<DataEvent<BinanceMarginStreamEvent>>? onStreamTerminated,
+            CancellationToken ct)
+        {
+            var subscription = new BinanceMarginUserDataSubscription(Logger, listenKey, onOrderUpdate, onAccountUpdate, onBalanceUpdate, onListenKeyExpired, onStreamTerminated);
+            return await SubscribeAsync(BaseAddress, subscription, ct).ConfigureAwait(false);
+        }

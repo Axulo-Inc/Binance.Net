@@ -38,11 +38,11 @@ namespace Binance.Net.Objects.Sockets.Subscriptions
             _streamTerminatedHandler = streamTerminatedHandler;
 
             MessageMatcher = MessageMatcher.Create([
-                new MessageHandlerLink<BinanceCombinedStream<BinanceMarginStreamAccountUpdate>>(_listenKey, "outboundAccountPosition", DoHandleMessage),
-                new MessageHandlerLink<BinanceCombinedStream<BinanceMarginStreamBalanceUpdate>>(_listenKey, "balanceUpdate", DoHandleMessage),
-                new MessageHandlerLink<BinanceCombinedStream<BinanceMarginStreamOrderUpdate>>(_listenKey, "executionReport", DoHandleMessage),
-                new MessageHandlerLink<BinanceCombinedStream<BinanceMarginStreamEvent>>(_listenKey, "listenKeyExpired", DoHandleMessage),
-                new MessageHandlerLink<BinanceCombinedStream<BinanceMarginStreamEvent>>(_listenKey, "eventStreamTerminated", DoHandleMessage)
+                new MessageHandlerLink<BinanceCombinedStream<BinanceMarginStreamAccountUpdate>>(_listenKey + "outboundAccountPosition", DoHandleMessage),
+                new MessageHandlerLink<BinanceCombinedStream<BinanceMarginStreamBalanceUpdate>>(_listenKey + "balanceUpdate", DoHandleMessage),
+                new MessageHandlerLink<BinanceCombinedStream<BinanceMarginStreamOrderUpdate>>(_listenKey + "executionReport", DoHandleMessage),
+                new MessageHandlerLink<BinanceCombinedStream<BinanceMarginStreamEvent>>(_listenKey + "listenKeyExpired", DoHandleMessage),
+                new MessageHandlerLink<BinanceCombinedStream<BinanceMarginStreamEvent>>(_listenKey + "eventStreamTerminated", DoHandleMessage)
             ]);
         }
 
@@ -71,7 +71,6 @@ namespace Binance.Net.Objects.Sockets.Subscriptions
         /// <inheritdoc />
         public CallResult DoHandleMessage(SocketConnection connection, DataEvent<BinanceCombinedStream<BinanceMarginStreamAccountUpdate>> message)
         {
-            message.Data.Data.ListenKey = message.Data.Stream;
             _accountHandler?.Invoke(message.As(message.Data.Data, message.Data.Stream, null, SocketUpdateType.Update).WithDataTimestamp(message.Data.Data.EventTime));
             return CallResult.SuccessResult;
         }
@@ -79,7 +78,6 @@ namespace Binance.Net.Objects.Sockets.Subscriptions
         /// <inheritdoc />
         public CallResult DoHandleMessage(SocketConnection connection, DataEvent<BinanceCombinedStream<BinanceMarginStreamBalanceUpdate>> message)
         {
-            message.Data.Data.ListenKey = message.Data.Stream;
             _balanceHandler?.Invoke(message.As(message.Data.Data, message.Data.Stream, null, SocketUpdateType.Update).WithDataTimestamp(message.Data.Data.EventTime));
             return CallResult.SuccessResult;
         }
@@ -87,7 +85,6 @@ namespace Binance.Net.Objects.Sockets.Subscriptions
         /// <inheritdoc />
         public CallResult DoHandleMessage(SocketConnection connection, DataEvent<BinanceCombinedStream<BinanceMarginStreamOrderUpdate>> message)
         {
-            message.Data.Data.ListenKey = message.Data.Stream;
             _orderHandler?.Invoke(message.As(message.Data.Data, message.Data.Stream, message.Data.Data.Symbol, SocketUpdateType.Update).WithDataTimestamp(message.Data.Data.EventTime));
             return CallResult.SuccessResult;
         }
@@ -95,8 +92,6 @@ namespace Binance.Net.Objects.Sockets.Subscriptions
         /// <inheritdoc />
         public CallResult DoHandleMessage(SocketConnection connection, DataEvent<BinanceCombinedStream<BinanceMarginStreamEvent>> message)
         {
-            message.Data.Data.ListenKey = message.Data.Stream;
-            
             if (message.Data.Stream.EndsWith("listenKeyExpired"))
                 _listenKeyExpiredHandler?.Invoke(message.As(message.Data.Data, message.Data.Stream, null, SocketUpdateType.Update).WithDataTimestamp(message.Data.Data.EventTime));
             else if (message.Data.Stream.EndsWith("eventStreamTerminated"))

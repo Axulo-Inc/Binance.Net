@@ -62,4 +62,6 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
   </ItemGroup>
-</Project>
+</Project>  <ItemGroup>
+    <Compile Include="Extensions\BinanceSocketClientMarginExtensions.cs" />
+  </ItemGroup>
